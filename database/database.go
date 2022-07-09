@@ -2,33 +2,43 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"main/models"
 )
 
 // DB 对象
 var DB *gorm.DB
 
-// SQLDB 通用数据库接口
-var SQLDB *sql.DB
-
-// Connect 连接数据库
-func Connect(dbConfig gorm.Dialector, gormConfig gorm.Config) error {
-	// 使用 gorm.Open 连接数据库
+func init() {
 	var err error
-	if DB, err = gorm.Open(dbConfig, &gormConfig); err != nil {
-		return err
+	DB, err = NewSQLiteDB("arknights.db")
+	// DB, err = NewMySQL("127.0.0.1", "root", "", "test")
+	if err != nil {
+		fmt.Println("数据库初始化异常", err.Error())
 	}
-	if SQLDB, err = DB.DB(); err != nil {
-		return err
-	}
-	return nil
+
+	_ = DB.AutoMigrate(&models.Item{})
+	_ = DB.AutoMigrate(&models.Operator{})
+	_ = DB.AutoMigrate(&models.Skill{})
+	_ = DB.AutoMigrate(&models.SkillLevel{})
+	_ = DB.AutoMigrate(&models.SkillLevelMaterial{})
+	_ = DB.AutoMigrate(&models.Module{})
+	_ = DB.AutoMigrate(&models.ModuleStage{})
+	_ = DB.AutoMigrate(&models.ModuleStageMaterial{})
 }
 
-func DNS(user, pass, addr, port, db, char, loc string) string {
-	return fmt.Sprintf(
-		"%v:%v@tcp(%v:%v)/%v?parseTime=true&multiStatements=true&charset=%v&loc=%v",
-		user, pass, addr, port, db, char, loc,
-	)
+func NewSQLiteDB(dsn string) (*gorm.DB, error) {
+	return gorm.Open(sqlite.Open(dsn), &gorm.Config{
+		// Logger: logger.Default.LogMode(logger.Silent),
+	})
+}
+
+func NewMySQL(host, user, pass, dbname string) (*gorm.DB, error) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", user, pass, host, dbname)
+	return gorm.Open(mysql.Open(dsn), &gorm.Config{
+		// Logger: logger.Default.LogMode(logger.Silent),
+	})
 }
