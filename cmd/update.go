@@ -39,3 +39,7 @@ var updateCmd = &cobra.Command{
 		return nil
 	},
 }
+
+func init() {
+	rootCmd.AddCommand(updateCmd)
+}
