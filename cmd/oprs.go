@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"main/database"
+	"main/logger"
 	"main/models"
-	"main/pkg/logger"
 )
 
 // opr 命令的参数 与 opr 相同

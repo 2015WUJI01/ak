@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gocolly/colly"
 	"main/database"
+	"main/logger"
 	"main/models"
-	"main/pkg/logger"
 	"strings"
 	"time"
 )

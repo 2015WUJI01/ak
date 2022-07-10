@@ -4,8 +4,8 @@ import (
 	"github.com/gocolly/colly"
 	"gorm.io/gorm/clause"
 	"main/database"
+	"main/logger"
 	"main/models"
-	"main/pkg/logger"
 	"strings"
 	"time"
 )

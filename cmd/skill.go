@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"main/database"
+	"main/logger"
 	"main/models"
-	"main/pkg/logger"
 	"strconv"
 	"strings"
 )

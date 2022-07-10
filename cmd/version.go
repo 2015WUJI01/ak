@@ -8,11 +8,9 @@ const logo = `
  /_/   \_\_|  |_|\_\_| |_|_|\__, |_| |_|\__|___/
                             |___/
 `
-const version = "0.0.2"
+const version = "0.1.0"
 const content = `
-  - feat: 新增 update、opr、oprs、alias 四个命令的功能，具体使用可以在 ak [command] help 中查看
-  - feat: 当当！弄了一个 logo ！
-  - feat: cobra 自带的 help 命令习惯之后感觉挺好用的，新手可能需要点时间适应
+  - 删除了大部分用不到的文件，目录变得干净啦~
 `
 
 func versionMsg() string {

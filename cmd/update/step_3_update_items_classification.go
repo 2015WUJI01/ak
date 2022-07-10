@@ -2,8 +2,8 @@ package update
 
 import (
 	"github.com/gocolly/colly"
+	"main/logger"
 	"main/models"
-	"main/pkg/logger"
 )
 
 // 道具的分类

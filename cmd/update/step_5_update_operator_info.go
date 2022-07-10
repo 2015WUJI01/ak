@@ -6,9 +6,8 @@ import (
 	"github.com/gocolly/colly"
 	"gorm.io/gorm/clause"
 	"main/database"
+	"main/logger"
 	"main/models"
-	"main/pkg/logger"
-	"main/wiki"
 	"regexp"
 	"strconv"
 	"strings"
@@ -473,7 +472,7 @@ func FetchAndUpdateOperatorSkillIcon(url string, sk models.Skill) {
 		_ = r.Request.Retry()
 	})
 	c.OnHTML("#file.fullImageLink a[href]", func(a *colly.HTMLElement) {
-		sk.Icon = wiki.Page(a.Attr("href"))
+		sk.Icon = Link(a.Attr("href"))
 		// CreateOrUpdateOperatorSkill([]string{"opr_id", "order", "icon"}, sk)
 		skillIcons = append(skillIcons, sk)
 	})
