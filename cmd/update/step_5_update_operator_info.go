@@ -8,6 +8,7 @@ import (
 	"main/database"
 	"main/logger"
 	"main/models"
+	"main/wiki"
 	"regexp"
 	"strconv"
 	"strings"
@@ -48,7 +49,7 @@ func Step5() {
 	// 获取并更新干员 wiki 短链接、职业、稀有度、最后编辑时间
 	updateOperatorInfo(c)
 	for _, opr := range oprs {
-		_ = c.Visit(Link("/w/" + opr.Name))
+		_ = c.Visit(wiki.Link("/w/" + opr.Name))
 	}
 
 	c.Wait()
@@ -472,11 +473,11 @@ func FetchAndUpdateOperatorSkillIcon(url string, sk models.Skill) {
 		_ = r.Request.Retry()
 	})
 	c.OnHTML("#file.fullImageLink a[href]", func(a *colly.HTMLElement) {
-		sk.Icon = Link(a.Attr("href"))
+		sk.Icon = wiki.Link(a.Attr("href"))
 		// CreateOrUpdateOperatorSkill([]string{"opr_id", "order", "icon"}, sk)
 		skillIcons = append(skillIcons, sk)
 	})
-	_ = c.Visit(Link(url))
+	_ = c.Visit(wiki.Link(url))
 	wg.Done()
 }
 

@@ -6,6 +6,7 @@ import (
 	"main/database"
 	"main/logger"
 	"main/models"
+	"main/wiki"
 	"strings"
 	"time"
 )
@@ -31,10 +32,10 @@ func fetchAllOperators() []models.Operator {
 			ID:        a.Index + 1,
 			Name:      strings.TrimSpace(a.Text),
 			Roguelike: isRoguelike(strings.TrimSpace(a.Text)),
-			Wiki:      Link(a.Attr("href")),
+			Wiki:      wiki.Link(a.Attr("href")),
 		})
 	})
-	_ = c.Visit(Link("/w/干员上线时间一览"))
+	_ = c.Visit(wiki.Link("/w/干员上线时间一览"))
 	return oprs
 }
 

@@ -8,7 +8,7 @@ import (
 var updateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "更新数据",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			update.Step1()
 			update.Step2()
@@ -36,7 +36,6 @@ var updateCmd = &cobra.Command{
 				update.Step5()
 			}
 		}
-		return nil
 	},
 }
 

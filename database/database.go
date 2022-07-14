@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"log"
-	"main/models"
 	"os"
 	"time"
 )
@@ -23,12 +22,6 @@ func init() {
 	if err != nil {
 		fmt.Println("数据库初始化异常", err.Error())
 	}
-
-	_ = DB.AutoMigrate(
-		&models.Item{}, &models.Operator{}, &models.Alias{},
-		&models.Skill{}, &models.SkillLevel{}, &models.SkillLevelMaterial{},
-		&models.Module{}, &models.ModuleStage{}, &models.ModuleStageMaterial{},
-	)
 }
 
 func NewSQLiteDB(dsn string) (*gorm.DB, error) {

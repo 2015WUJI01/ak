@@ -4,6 +4,7 @@ import (
 	"github.com/gocolly/colly"
 	"main/logger"
 	"main/models"
+	repo "main/repositories"
 )
 
 // 道具的分类
@@ -30,7 +31,7 @@ func Step3() {
 			Type:  cf.Type,
 		})
 	}
-	CreateOrUpdateItems([]string{"name", "group", "type"}, items)
+	repo.CreateOrUpdateItems([]string{"name", "group", "type"}, items)
 	logger.Infof("Step3. 道具分类信息更新完成")
 }
 

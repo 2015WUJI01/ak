@@ -2,10 +2,10 @@ package update
 
 import (
 	"github.com/gocolly/colly"
-	"gorm.io/gorm/clause"
-	"main/database"
 	"main/logger"
 	"main/models"
+	repo "main/repositories"
+	"main/wiki"
 	"strings"
 	"time"
 )
@@ -14,7 +14,7 @@ import (
 func Step1() []models.Item {
 	items := fetchAllItems()
 	logger.Infof("Step1. 共获取到 %d 条道具数据", len(items))
-	CreateOrUpdateItems([]string{"name", "wiki"}, items)
+	repo.CreateOrUpdateItems([]string{"name", "wiki"}, items)
 	return items
 }
 
@@ -36,7 +36,7 @@ func fetchAllItems() []models.Item {
 	c.OnHTML(".mw-category-group ul li a", func(a *colly.HTMLElement) {
 		items = append(items, models.Item{
 			Name: strings.TrimSpace(a.Text),
-			Wiki: Link(a.Attr("href")),
+			Wiki: wiki.Link(a.Attr("href")),
 		})
 	})
 
@@ -51,7 +51,7 @@ func fetchAllItems() []models.Item {
 		cc.OnHTML(".mw-category-group ul li a", func(a *colly.HTMLElement) {
 			items = append(items, models.Item{
 				Name: strings.TrimSpace(a.Text),
-				Wiki: Link(a.Attr("href")),
+				Wiki: wiki.Link(a.Attr("href")),
 			})
 		})
 		// 获取第三页链接
@@ -65,36 +65,13 @@ func fetchAllItems() []models.Item {
 			ccc.OnHTML(".mw-category-group ul li a", func(a *colly.HTMLElement) {
 				items = append(items, models.Item{
 					Name: strings.TrimSpace(a.Text),
-					Wiki: Link(a.Attr("href")),
+					Wiki: wiki.Link(a.Attr("href")),
 				})
 			})
-			_ = ccc.Visit(Link(ee.Attr("href")))
+			_ = ccc.Visit(wiki.Link(ee.Attr("href")))
 		})
-		_ = cc.Visit(Link(e.Attr("href")))
+		_ = cc.Visit(wiki.Link(e.Attr("href")))
 	})
 	_ = c.Visit("https://prts.wiki/w/分类:道具")
 	return items
-}
-
-func CreateOrUpdateItem(cols []string, item models.Item) {
-	database.DB.Select(cols).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "name"}},
-		DoUpdates: clause.AssignmentColumns(cols),
-	}).Create(&item)
-}
-
-// CreateOrUpdateItems 批量创建或更新数据
-func CreateOrUpdateItems(cols []string, items []models.Item) {
-	database.DB.Select(cols).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "name"}},
-		DoUpdates: clause.AssignmentColumns(cols),
-	}).Create(&items)
-}
-
-func createItemIfNotExists(item models.Item) {
-	var cnt int64
-	database.DB.Model(&models.Item{}).Where("name", item.Name).Count(&cnt)
-	if cnt == 0 {
-		database.DB.Create(&item)
-	}
 }

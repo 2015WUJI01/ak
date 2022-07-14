@@ -6,6 +6,8 @@ import (
 	"main/database"
 	"main/logger"
 	"main/models"
+	repo "main/repositories"
+	"main/wiki"
 	"strings"
 	"time"
 )
@@ -22,7 +24,7 @@ func Step2() {
 		items = append(items, item)
 	}
 
-	CreateOrUpdateItems([]string{"name", "image", "wiki_short", "updated_at"}, items)
+	repo.CreateOrUpdateItems([]string{"name", "image", "wiki_short", "updated_at"}, items)
 	// CreateOrUpdateItems([]string{"group", "type"}, items)
 
 	logger.Infof("Step2. 道具基本信息更新完成")
@@ -76,9 +78,9 @@ func fetchItemsInfo(itemsMap map[string]models.Item) {
 			if i == 1 {
 				td.ForEach("a.image > img", func(_ int, img *colly.HTMLElement) {
 					if img.Attr("data-src") == "" {
-						image = Link(img.Attr("src"))
+						image = wiki.Link(img.Attr("src"))
 					} else {
-						image = Link(img.Attr("data-src"))
+						image = wiki.Link(img.Attr("data-src"))
 					}
 				})
 			}
