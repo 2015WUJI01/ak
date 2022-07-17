@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"main/cmd/update"
+	"main/models"
+	repo "main/repositories"
 )
 
 var updateCmd = &cobra.Command{
@@ -40,5 +43,29 @@ var updateCmd = &cobra.Command{
 }
 
 func init() {
+	var wikiFlag, groupFlag bool
+	updateItemCmd := &cobra.Command{
+		Use:     "item",
+		Short:   "更新指定的 item",
+		Example: "ak update item -wiki 龙门币",
+		Args:    cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			for _, itemname := range args {
+				item := models.Item{Name: itemname}
+				if wikiFlag {
+					models.FreshItemWiki(&item)
+					repo.CreateOrUpdateItem(item, "name", "wiki")
+					fmt.Printf("更新 %v wiki 成功：%v\n", item.Name, item.Wiki)
+				}
+				if groupFlag {
+					item.FreshGroup()
+					fmt.Printf("更新 %v group 成功：%v\n", item.Name, item.Wiki)
+				}
+			}
+		},
+	}
+	updateItemCmd.Flags().BoolVarP(&wikiFlag, "wiki", "w", false, "更新 wiki 链接")
+	updateItemCmd.Flags().BoolVarP(&groupFlag, "group", "g", false, "更新 wiki 链接")
+	updateCmd.AddCommand(updateItemCmd)
 	rootCmd.AddCommand(updateCmd)
 }

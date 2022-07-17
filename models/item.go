@@ -1,10 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"github.com/gocolly/colly"
 	"main/database"
 	"main/wiki"
-	"strings"
 	"time"
 )
 
@@ -30,43 +30,35 @@ func (m Item) TableName() string {
 	return "items"
 }
 
-func (m Item) FetchWiki(c *colly.Collector) (w string) {
-	// 获取第一轮的 200 条数据
-	c.OnHTML(".mw-category-group ul li a", func(a *colly.HTMLElement) {
-		if strings.TrimSpace(a.Text) == m.Name {
-			w = a.Attr("href")
+func FreshItemWiki(items ...*Item) []*Item {
+	if len(items) == 0 {
+		for n, w := range wiki.FetchAllWiki() {
+			items = append(items, &Item{Name: n, Wiki: w})
 		}
-	})
-	c.OnHTML(`a[title="分类:道具"]:last-of-type`, func(e *colly.HTMLElement) {
-		cc := wiki.NewCollector()
-		// 获取第二轮的 200 条数据
-		cc.OnHTML(".mw-category-group ul li a", func(a *colly.HTMLElement) {
-			if strings.TrimSpace(a.Text) == m.Name {
-				w = a.Attr("href")
-			}
-		})
-		// 获取第三页链接
-		cc.OnHTML(`a[title="分类:道具"]:last-of-type`, func(ee *colly.HTMLElement) {
-			ccc := wiki.NewCollector()
-			// 获取第三页的 200 条数据
-			ccc.OnHTML(".mw-category-group ul li a", func(a *colly.HTMLElement) {
-				if strings.TrimSpace(a.Text) == m.Name {
-					w = a.Attr("href")
-				}
-			})
-			_ = ccc.Visit(wiki.Link(ee.Attr("href")))
-		})
-		_ = cc.Visit(wiki.Link(e.Attr("href")))
-	})
-	_ = c.Visit("https://prts.wiki/w/分类:道具")
-	return wiki.Link(w)
+		return items
+	}
+	mwikis := wiki.FetchAllWiki(func() []string {
+		var names []string
+		for _, item := range items {
+			names = append(names, item.Name)
+		}
+		return names
+	}()...)
+	for _, item := range items {
+		item.Wiki = mwikis[item.Name]
+	}
+	return items
 }
-func (m *Item) FreshWiki() {
-	m.Wiki = m.FetchWiki(wiki.NewCollector())
-}
-func (m *Item) FreshWikiIfEmpty() {
-	if m.Wiki != "" {
-		m.FreshWiki()
+
+func FreshItemImgSWikiUpdateTime(items ...*Item) {
+	res := wiki.FetchItemInfo("理智", "先锋芯片")
+	for name, v := range res {
+		fmt.Printf("%v:\n\t%v\n\t%v\n\t%v\n",
+			name,
+			v["image"].(string),
+			v["wikishort"].(string),
+			v["updatedat"].(time.Time).Format("2006-01-02 15:04:05"),
+		)
 	}
 }
 

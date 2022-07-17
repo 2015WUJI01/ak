@@ -39,30 +39,6 @@ func fetchAllOperators() []models.Operator {
 	return oprs
 }
 
-// CreateOprIfNotExists 若干员不存在则创建该干员
-func CreateOprIfNotExists(opr models.Operator) bool {
-	var cnt int64
-	database.DB.Model(&models.Operator{}).Where("name", opr.Name).Count(&cnt)
-	if cnt == 0 {
-		database.DB.Select("id", "name", "roguelike", "wiki").Create(&opr)
-		return true
-	}
-	return false
-}
-
-// CreateOrUpdateOperator
-// 根据主键进行查询，若存在则更新，若不存在则创建
-func CreateOrUpdateOperator(cols []string, opr models.Operator) (created bool) {
-	var cnt int64
-	database.DB.Model(&models.Operator{}).Where("name", opr.Name).Count(&cnt)
-	if cnt > 0 {
-		database.DB.Select(cols).Updates(&opr)
-		return false
-	}
-	database.DB.Select(cols).Create(&opr)
-	return true
-}
-
 // CreateOrUpdateOperators
 // 根据主键进行查询，若存在则更新，若不存在则创建
 func CreateOrUpdateOperators(cols []string, oprs []models.Operator) {
