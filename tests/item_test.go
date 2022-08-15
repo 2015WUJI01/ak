@@ -42,7 +42,7 @@ func TestFreshAllWiki(t *testing.T) {
 		// 	models.FreshItemWiki(tt.items...)
 		// 	for _, item := range tt.items {
 		// 单条或多条
-		// assert.Equal(t, tt.wiki[item.Name], item.Wiki)
+		// assert.Equal(t, tt.wiki[item.name], item.wiki)
 		// 全部
 		// }
 		// })

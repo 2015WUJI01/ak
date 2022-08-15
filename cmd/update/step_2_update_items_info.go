@@ -13,7 +13,7 @@ import (
 
 // Step2 从数据库中获取所有道具，对每个道具进行数据更新
 func Step2() {
-	fmt.Println("逐条采集道具信息中...")
+	// fmt.Println("逐条采集道具信息中...")
 
 	var items []models.Item
 	_ = database.DB.Find(&items)
@@ -25,7 +25,7 @@ func Step2() {
 		return names
 	}()...)
 	for i, item := range items {
-		items[i].Image = minfo[item.Name]["name"].(string)
+		items[i].Image = minfo[item.Name]["image"].(string)
 		items[i].WikiShort = minfo[item.Name]["wikishort"].(string)
 		items[i].UpdatedAt = minfo[item.Name]["updatedat"].(time.Time)
 	}

@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"main/database"
 	"main/models"
+	repo "main/repositories"
 )
 
 // opr 命令的参数
@@ -33,44 +33,42 @@ var oprCmd = &cobra.Command{
 	DisableAutoGenTag:     false,
 	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		var opr models.Operator
-		var key = args[0]
+		var exec = []struct {
+			exec bool
+			fn   func(string) (models.Operator, bool)
+		}{
+			// 优先查询干员 ID
+			{exec: id, fn: repo.FindOprByID},
+			// 查询干员名称
+			{exec: name, fn: repo.FindOprByName},
+			// 再查询别名
+			{exec: alias, fn: repo.FindOprByAlias},
+		}
 
-		// 优先查询干员 ID
-		if id {
-			database.DB.Where("id", key).First(&opr)
-			if (models.Operator{}) != opr {
-				fmt.Printf("%+v\n", opr)
-				return
+		for _, s := range exec {
+			if s.exec {
+				if opr, ok := s.fn(args[0]); ok {
+					fmt.Println(opr.Info(repo.FindOprAlias(opr.Name)))
+					resetOprCmdFlags(cmd)
+					return
+				}
 			}
 		}
-
-		// 查询干员名称
-		if name {
-			database.DB.Where("name", key).First(&opr)
-			if (models.Operator{}) != opr {
-				fmt.Printf("%+v\n", opr)
-				return
-			}
-		}
-
-		// 再查询别名
-		if alias {
-			fmt.Printf("暂不支持别名查询\n")
-			// database.DB.Where("id", key).Find(&oprs)
-			// for _, opr := range oprs {
-			// 	fmt.Printf("%+v\n", opr)
-			// }
-		}
-		fmt.Printf("查询无果\n")
+		fmt.Println("查询无果")
+		resetOprCmdFlags(cmd)
 	},
 }
 
 func init() {
-	oprCmd.Flags().BoolVarP(&id, "id", "i", false, "使用「干员 ID」进行查询")
-	oprCmd.Flags().BoolVarP(&name, "name", "n", true, "使用「干员名称」进行查询")
-	oprCmd.Flags().BoolVarP(&alias, "alias", "a", false, "使用「干员别名」进行查询")
-	oprCmd.Flags().BoolP("auto", "A", false, "自动模式，即使用 -ian 进行模糊查询")
+	resetOprCmdFlags(oprCmd)
 
 	rootCmd.AddCommand(oprCmd)
+}
+
+func resetOprCmdFlags(cmd *cobra.Command) {
+	cmd.ResetFlags()
+	cmd.Flags().BoolVarP(&id, "id", "i", false, "使用「干员 ID」进行查询")
+	cmd.Flags().BoolVarP(&name, "name", "n", true, "使用「干员名称」进行查询")
+	cmd.Flags().BoolVarP(&alias, "alias", "a", false, "使用「干员别名」进行查询")
+	cmd.Flags().BoolP("auto", "A", false, "自动模式，即使用 -ian 进行模糊查询")
 }

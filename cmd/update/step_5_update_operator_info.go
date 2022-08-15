@@ -177,9 +177,9 @@ func updateOperatorInfo(c *colly.Collector) {
 				// cols := []string{"opr_id", "opr_name", "order", "name", "restore", "active"}
 				// CreateOrUpdateOperatorSkill(cols, models.Skill{
 				// 	OprID:   opr.ID,
-				// 	OprName: opr.Name,
+				// 	OprName: opr.name,
 				// 	Order:   order,
-				// 	Name:    skillName,
+				// 	name:    skillName,
 				// 	Restore: restore,
 				// 	Active:  active,
 				// })
@@ -243,7 +243,7 @@ func updateOperatorInfo(c *colly.Collector) {
 					td.ForEach("div", func(_ int, div *colly.HTMLElement) {
 						// CreateOrUpdateOperatorSkillLevelMaterial(cols, models.SkillLevelMaterial{
 						// 	OprID:    opr.ID,
-						// 	OprName:  opr.Name,
+						// 	OprName:  opr.name,
 						// 	Order:    0,
 						// 	ToLevel:  i*4/3 + idx + 1,
 						// 	ItemName: strings.TrimSpace(div.ChildAttr("a", "title")),
@@ -264,7 +264,7 @@ func updateOperatorInfo(c *colly.Collector) {
 					td.ForEach("div", func(_ int, div *colly.HTMLElement) {
 						// CreateOrUpdateOperatorSkillLevelMaterial(cols, models.SkillLevelMaterial{
 						// 	OprID:    opr.ID,
-						// 	OprName:  opr.Name,
+						// 	OprName:  opr.name,
 						// 	Order:    idx + 1,
 						// 	ToLevel:  i + 2,
 						// 	ItemName: strings.TrimSpace(div.ChildAttr("a", "title")),
@@ -321,7 +321,7 @@ func updateOperatorInfo(c *colly.Collector) {
 					// cols := []string{"opr_id", "module_name", "module_order", "stage", "basic_info", "attribution"}
 					// CreateOrUpdateOperatorModuleStage(cols, models.ModuleStage{
 					// 	OprID:       opr.ID,
-					// 	ModuleName:  om.Name,
+					// 	ModuleName:  om.name,
 					// 	ModuleOrder: om.Order,
 					// 	Stage:       1,
 					// 	BasicInfo:   strings.TrimSpace(tr.ChildText("td:nth-of-type(2)")),
@@ -332,7 +332,7 @@ func updateOperatorInfo(c *colly.Collector) {
 					// cols := []string{"opr_id", "module_name", "module_order", "stage", "basic_info", "attribution"}
 					// CreateOrUpdateOperatorModuleStage(cols, models.ModuleStage{
 					// 	OprID:       opr.ID,
-					// 	ModuleName:  om.Name,
+					// 	ModuleName:  om.name,
 					// 	ModuleOrder: om.Order,
 					// 	Stage:       2,
 					// 	BasicInfo:   strings.TrimSpace(tr.ChildText("td:nth-of-type(2)")),
@@ -343,7 +343,7 @@ func updateOperatorInfo(c *colly.Collector) {
 					// cols := []string{"opr_id", "module_name", "module_order", "stage", "basic_info", "attribution"}
 					// CreateOrUpdateOperatorModuleStage(cols, models.ModuleStage{
 					// 	OprID:       opr.ID,
-					// 	ModuleName:  om.Name,
+					// 	ModuleName:  om.name,
 					// 	ModuleOrder: om.Order,
 					// 	Stage:       3,
 					// 	BasicInfo:   strings.TrimSpace(tr.ChildText("td:nth-of-type(2)")),
@@ -363,8 +363,8 @@ func updateOperatorInfo(c *colly.Collector) {
 						// cols := []string{"opr_id", "opr_name", "module_name", "module_order", "to_stage", "item_name", "amount"}
 						// CreateOrUpdateOperatorModuleStageMaterial(cols, models.ModuleStageMaterial{
 						// 	OprID:       opr.ID,
-						// 	OprName:     opr.Name,
-						// 	ModuleName:  om.Name,
+						// 	OprName:     opr.name,
+						// 	ModuleName:  om.name,
 						// 	ModuleOrder: om.Order,
 						// 	ToStage:     1,
 						// 	ItemName:    strings.TrimSpace(div.ChildAttr("a", "title")),
@@ -378,8 +378,8 @@ func updateOperatorInfo(c *colly.Collector) {
 						// cols := []string{"opr_id", "opr_name", "module_name", "module_order", "to_stage", "item_name", "amount"}
 						// CreateOrUpdateOperatorModuleStageMaterial(cols, models.ModuleStageMaterial{
 						// 	OprID:       opr.ID,
-						// 	OprName:     opr.Name,
-						// 	ModuleName:  om.Name,
+						// 	OprName:     opr.name,
+						// 	ModuleName:  om.name,
 						// 	ModuleOrder: om.Order,
 						// 	ToStage:     2,
 						// 	ItemName:    strings.TrimSpace(div.ChildAttr("a", "title")),
@@ -392,8 +392,8 @@ func updateOperatorInfo(c *colly.Collector) {
 						// cols := []string{"opr_id", "opr_name", "module_name", "module_order", "to_stage", "item_name", "amount"}
 						// CreateOrUpdateOperatorModuleStageMaterial(cols, models.ModuleStageMaterial{
 						// 	OprID:       opr.ID,
-						// 	OprName:     opr.Name,
-						// 	ModuleName:  om.Name,
+						// 	OprName:     opr.name,
+						// 	ModuleName:  om.name,
 						// 	ModuleOrder: om.Order,
 						// 	ToStage:     3,
 						// 	ItemName:    strings.TrimSpace(div.ChildAttr("a", "title")),

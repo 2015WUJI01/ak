@@ -5,3 +5,4 @@ items.json
 arknights.db
 .air.toml
 logs
+.DS_Store

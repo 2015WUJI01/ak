@@ -5,6 +5,7 @@ import (
 	"github.com/gocolly/colly"
 	"main/database"
 	"main/wiki"
+	"strings"
 	"time"
 )
 
@@ -26,8 +27,18 @@ type Item struct {
 	UpdatedAt time.Time `json:"updated_at" gorm:"column:updated_at;autoUpdateTime:false"`
 }
 
-func (m Item) TableName() string {
+func (i Item) TableName() string {
 	return "items"
+}
+
+func (i Item) Info(alias []string) string {
+	msg := fmt.Sprintf("%s", i.Name)
+	if len(alias) > 0 {
+		msg += fmt.Sprintf("\n别名: %s", strings.Join(alias, ", "))
+	}
+	msg += fmt.Sprintf("\nimg: %s", i.Image)
+	msg += fmt.Sprintf("\nwiki: %s", i.WikiShort)
+	return msg
 }
 
 func FreshItemWiki(items ...*Item) []*Item {
@@ -62,7 +73,7 @@ func FreshItemImgSWikiUpdateTime(items ...*Item) {
 	}
 }
 
-func (m Item) FetchGroup(c *colly.Collector) (g string) {
+func (i Item) FetchGroup(c *colly.Collector) (g string) {
 	// 表格中一行就是一个 group
 	c.OnHTML("table.uncollapsed > tbody > tr:has(th:not(.navbox-title))", func(tr *colly.HTMLElement) {
 		var group string
@@ -80,15 +91,15 @@ func (m Item) FetchGroup(c *colly.Collector) (g string) {
 			// 当 group 没有 type 时，此时的一行即
 			tr.ForEach(`td:has(div:not(:empty)[style="padding:0em 0.25em"]) .smw-value`,
 				func(_ int, e *colly.HTMLElement) {
-					if e.Text == m.Name {
+					if e.Text == i.Name {
 						g = group
 					}
 				})
 		} else {
 			// 二级元素
-			tr.ForEach("td:has(table) table tr:has(th)", func(i int, tr *colly.HTMLElement) {
+			tr.ForEach("td:has(table) table tr:has(th)", func(ii int, tr *colly.HTMLElement) {
 				tr.ForEach("td li .smw-value", func(_ int, e *colly.HTMLElement) {
-					if e.Text == m.Name {
+					if e.Text == i.Name {
 						g = group
 					}
 				})
@@ -98,11 +109,11 @@ func (m Item) FetchGroup(c *colly.Collector) (g string) {
 	_ = c.Visit("https://prts.wiki/w/%E7%90%86%E6%99%BA")
 	return g
 }
-func (m *Item) FreshGroup() {
-	m.Group = m.FetchGroup(wiki.NewCollector())
+func (i *Item) FreshGroup() {
+	i.Group = i.FetchGroup(wiki.NewCollector())
 }
-func (m *Item) FreshGroupIfEmpty() {
-	if m.Group != "" {
-		m.FreshGroup()
+func (i *Item) FreshGroupIfEmpty() {
+	if i.Group != "" {
+		i.FreshGroup()
 	}
 }

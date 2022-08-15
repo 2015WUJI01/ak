@@ -3,19 +3,25 @@ package wiki
 import (
 	"fmt"
 	"github.com/gocolly/colly"
+	"github.com/schollz/progressbar/v3"
 	"net/url"
 	"strings"
 	"time"
 )
 
-type itemPageData struct {
+type ItemPage struct {
+	GoalsName []string
+	Data      []ItemPageData
+}
+
+type ItemPageData struct {
 	name      string
 	image     string
 	wikishort string
 	updatedat time.Time
 }
 
-func (data itemPageData) ToMap() map[string]interface{} {
+func (data ItemPageData) ToMap() map[string]interface{} {
 	return map[string]interface{}{
 		"name":      data.name,
 		"image":     data.image,
@@ -40,13 +46,28 @@ func FetchItemInfo(names ...string) map[string]map[string]interface{} {
 	return minfo
 }
 
-func fetchItemPage(names map[string]struct{}) (res map[string]itemPageData) {
-	res = make(map[string]itemPageData)
+func fetchItemPage(names map[string]struct{}) (res map[string]ItemPageData) {
+	res = make(map[string]ItemPageData)
 
 	// 需要访问每个道具的页面，所以开启异步
-	c := NewAsyncCollector(4, 40, 5*time.Second)
+	c := NewAsyncCollector(4, 50, 5*time.Second)
 	// 爬取每个道具页面
-	completed := 0
+	bar := progressbar.NewOptions(len(names),
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionShowCount(),
+		progressbar.OptionShowIts(),
+		progressbar.OptionOnCompletion(func() {
+			fmt.Println()
+		}),
+		progressbar.OptionSetWidth(50),
+		progressbar.OptionSetDescription("逐条采集道具信息中..."),
+		progressbar.OptionSetTheme(progressbar.Theme{
+			Saucer:        "[green]=[reset]",
+			SaucerHead:    "[green]>[reset]",
+			SaucerPadding: "[green]-[reset]",
+			BarStart:      "[",
+			BarEnd:        "]",
+		}))
 
 	c.OnHTML("body", func(body *colly.HTMLElement) {
 		// 页面中包含的信息有：道具名称、icon 图片链接、wiki 短链接，以及最后编辑时间（视为上次更新时间）
@@ -56,9 +77,10 @@ func fetchItemPage(names map[string]struct{}) (res map[string]itemPageData) {
 		// 1. 获取道具名称
 		body.ForEach("#firstHeading", func(i int, e *colly.HTMLElement) {
 			// 道具页面的名称与分类页面的名称有误差，需要做修正
-			name = strings.ReplaceAll(e.Text, "α", "Α")
-			name = strings.ReplaceAll(name, "β", "Β")
-			name = strings.ReplaceAll(name, "γ", "Γ")
+			name = e.Text
+			for old, n := range map[string]string{"α": "Α", "β": "Β", "γ": "Γ"} {
+				name = strings.ReplaceAll(name, old, n)
+			}
 		})
 
 		if _, ok := names[name]; !ok {
@@ -88,17 +110,13 @@ func fetchItemPage(names map[string]struct{}) (res map[string]itemPageData) {
 			updatedAt = parseTime(e.Text)
 		})
 
-		res[name] = itemPageData{
+		res[name] = ItemPageData{
 			name:      name,
 			image:     image,
 			wikishort: wikishort,
 			updatedat: updatedAt,
 		}
-		completed++
-		fmt.Printf("=")
-		if completed%100 == 0 {
-			fmt.Println()
-		}
+		_ = bar.Add(1)
 	})
 
 	for name := range names {

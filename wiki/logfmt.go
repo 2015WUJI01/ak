@@ -1,6 +1,6 @@
 package wiki
 
-// 龙门币   | item | Wiki | 未找到
+// 龙门币   | item | wiki | 未找到
 // 龙门币   | item | WikiShort | 找到，但值为空
 const tml = "| %-12s | %-8s | %-10s |"
 

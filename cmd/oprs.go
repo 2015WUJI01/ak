@@ -26,7 +26,7 @@ var oprsCmd = &cobra.Command{
 	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		var oprs []models.Operator
-		// var oprsmap = make(map[string]int) // map[opr.Name]idx
+		// var oprsmap = make(map[string]int) // map[opr.name]idx
 		var keys = args
 
 		// 优先查询干员 ID
