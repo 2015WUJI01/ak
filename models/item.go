@@ -1,10 +1,10 @@
 package models
 
 import (
+	"ak/database"
+	"ak/wiki"
 	"fmt"
 	"github.com/gocolly/colly"
-	"main/database"
-	"main/wiki"
 	"strings"
 	"time"
 )

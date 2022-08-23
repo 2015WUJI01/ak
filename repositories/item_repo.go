@@ -1,9 +1,10 @@
 package repo
 
 import (
+	"ak/database"
+	"ak/models"
+	"github.com/2015WUJI01/looog"
 	"gorm.io/gorm/clause"
-	"main/database"
-	"main/models"
 	"strings"
 )
 
@@ -34,11 +35,16 @@ func CreateOrUpdateItemsp(cols []string, items []*models.Item) {
 
 // CreateOrUpdateItem 批量创建或更新数据
 // 传 cols 的时候，需要把 primaryKey 字段同时传入
-func CreateOrUpdateItem(item models.Item, cols ...string) {
-	database.DB.Select(cols).Clauses(clause.OnConflict{
+func CreateOrUpdateItem(item models.Item, cols ...string) bool {
+	tx := database.DB.Select(cols).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "name"}},
 		DoUpdates: clause.AssignmentColumns(cols),
 	}).Create(&item)
+	if tx.RowsAffected == 1 {
+		return true
+	}
+	looog.Error(tx.Error)
+	return false
 }
 
 // FindItemByName 通过 name 精准查询

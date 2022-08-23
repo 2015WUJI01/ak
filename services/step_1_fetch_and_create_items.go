@@ -2,10 +2,10 @@ package services
 
 import (
 	"github.com/gocolly/colly"
-	"main/pkg/progressbar"
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -14,10 +14,8 @@ type ItemsPageData struct {
 	Wiki string
 }
 
-func Step1(datach chan ItemsPageData) {
-	defer close(datach)
-
-	bar := progressbar.New("123", 0)
+func Step1(dataChan chan ItemsPageData, total chan int) {
+	defer close(dataChan)
 
 	c := colly.NewCollector(
 		colly.Async(true),
@@ -30,18 +28,18 @@ func Step1(datach chan ItemsPageData) {
 		_ = r.Request.Retry()
 	})
 
+	sendOnce := sync.Once{}
 	c.OnResponse(func(r *colly.Response) {
-		if bar.GetMax() == 0 {
+		sendOnce.Do(func() {
 			arr := regexp.MustCompile(`共(.*)个页面`).FindSubmatch(r.Body)
 			t, _ := strconv.Atoi(string(arr[1]))
-			bar.ChangeMax(t)
-		}
+			total <- t
+		})
 	})
 
 	// 一次获取 200 条数据
 	c.OnHTML(".mw-category-group ul li a", func(e *colly.HTMLElement) {
-		_ = bar.Add(1)
-		datach <- ItemsPageData{
+		dataChan <- ItemsPageData{
 			Name: strings.TrimSpace(e.Text),
 			Wiki: e.Request.AbsoluteURL(e.Attr("href")),
 		}

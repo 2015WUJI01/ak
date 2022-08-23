@@ -1,12 +1,12 @@
 package cmd
 
 import (
+	"ak/database"
+	"ak/logger"
+	"ak/models"
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
-	"main/database"
-	"main/logger"
-	"main/models"
 	"strconv"
 	"strings"
 )

@@ -1,14 +1,14 @@
 package update
 
 import (
+	"ak/database"
+	"ak/logger"
+	"ak/models"
+	"ak/wiki"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly"
 	"gorm.io/gorm/clause"
-	"main/database"
-	"main/logger"
-	"main/models"
-	"main/wiki"
 	"regexp"
 	"strconv"
 	"strings"

@@ -1,11 +1,11 @@
 package cmd
 
 import (
+	"ak/database"
+	"ak/models"
 	"fmt"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm/clause"
-	"main/database"
-	"main/models"
 )
 
 const (

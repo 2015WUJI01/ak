@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"ak/models"
+	repo "ak/repositories"
 	"fmt"
 	"github.com/spf13/cobra"
-	"main/models"
-	repo "main/repositories"
 )
 
 // opr 命令的参数

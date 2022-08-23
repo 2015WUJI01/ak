@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	repo "ak/repositories"
 	"fmt"
 	"github.com/spf13/cobra"
-	repo "main/repositories"
 )
 
 var itemCmd = &cobra.Command{

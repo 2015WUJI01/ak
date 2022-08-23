@@ -1,11 +1,11 @@
 package update
 
 import (
-	"main/database"
-	"main/logger"
-	"main/models"
-	repo "main/repositories"
-	"main/wiki"
+	"ak/database"
+	"ak/logger"
+	"ak/models"
+	repo "ak/repositories"
+	"ak/wiki"
 )
 
 // 道具的分类

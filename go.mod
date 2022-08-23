@@ -1,8 +1,6 @@
-module main
+module ak
 
 go 1.16
-
-replace github.com/2015WUJI01/looog v0.0.0-20220807104046-3ec4caaa1860 => ./pkg/looog
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
@@ -15,7 +13,7 @@ require (
 )
 
 require (
-	github.com/2015WUJI01/looog v0.0.0-20220807104046-3ec4caaa1860
+	github.com/2015WUJI01/looog v0.0.0-20220808092951-a06c90fc681e
 	github.com/antchfx/htmlquery v1.2.4 // indirect
 	github.com/antchfx/xmlquery v1.3.10 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect

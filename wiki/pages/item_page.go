@@ -1,9 +1,9 @@
 package pages
 
 import (
+	"ak/wiki"
 	"github.com/gocolly/colly"
 	"log"
-	"main/wiki"
 	"strings"
 	"time"
 )
@@ -16,6 +16,11 @@ type ItemPage struct {
 		ShortWiki string
 		Updatedat time.Time
 	}
+
+	Name      chan string
+	Image     chan string
+	ShortWiki chan string
+	UpdatedAt chan time.Time
 
 	c           *colly.Collector
 	onCompleted func(p *ItemPage)
@@ -36,15 +41,6 @@ func (p *ItemPage) SetCollector(c *colly.Collector) {
 }
 
 func (p *ItemPage) SetUrl(url string) { p.Url = url }
-
-func (p *ItemPage) Data() struct {
-	Name      string
-	Image     string
-	ShortWiki string
-	Updatedat time.Time
-} {
-	return p.data
-}
 
 // FetchImage 获取图片链接
 func (p *ItemPage) FetchImage(c *colly.Collector) {

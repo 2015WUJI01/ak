@@ -1,8 +1,8 @@
 package repo
 
 import (
-	"main/database"
-	"main/models"
+	"ak/database"
+	"ak/models"
 	"strings"
 )
 

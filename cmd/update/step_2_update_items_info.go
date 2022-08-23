@@ -1,20 +1,18 @@
 package update
 
 import (
+	"ak/database"
+	"ak/logger"
+	"ak/models"
+	repo "ak/repositories"
+	"ak/wiki"
 	"fmt"
-	"main/database"
-	"main/logger"
-	"main/models"
-	repo "main/repositories"
-	"main/wiki"
 	"strings"
 	"time"
 )
 
 // Step2 从数据库中获取所有道具，对每个道具进行数据更新
 func Step2() {
-	// fmt.Println("逐条采集道具信息中...")
-
 	var items []models.Item
 	_ = database.DB.Find(&items)
 	minfo := wiki.FetchItemInfo(func() []string {

@@ -1,12 +1,12 @@
 package update
 
 import (
+	"ak/database"
+	"ak/logger"
+	"ak/models"
+	"ak/wiki"
 	"github.com/gocolly/colly"
 	"gorm.io/gorm/clause"
-	"main/database"
-	"main/logger"
-	"main/models"
-	"main/wiki"
 	"strings"
 	"time"
 )

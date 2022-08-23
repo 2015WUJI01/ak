@@ -1,11 +1,11 @@
 package cmd
 
 import (
+	"ak/cmd/update"
+	"ak/models"
+	repo "ak/repositories"
 	"fmt"
 	"github.com/spf13/cobra"
-	"main/cmd/update"
-	"main/models"
-	repo "main/repositories"
 )
 
 var updateCmd = &cobra.Command{
