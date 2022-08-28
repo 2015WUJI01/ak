@@ -16,17 +16,17 @@ func Step2(items []models.Item, dataChan chan models.Item) {
 	// 需要访问每个道具的页面，所以开启异步
 	c := colly.NewCollector(
 		colly.Async(true),
-		// colly.CacheDir("tmp/cache"),
+		colly.CacheDir("tmp/cache"),
 	)
 	c.SetRequestTimeout(3 * time.Second)
 	_ = c.Limit(&colly.LimitRule{
-		DomainGlob:  "*",                    // limit 规则只会在指定的 domain 生效，所以必须配置
-		Parallelism: 2,                      // 同时抓取的协程数
-		Delay:       200 * time.Millisecond, // 抓取时延
+		DomainGlob:  "*",                   // limit 规则只会在指定的 domain 生效，所以必须配置
+		Parallelism: 4,                     // 同时抓取的协程数
+		Delay:       20 * time.Millisecond, // 抓取时延
 	})
 
 	c.OnError(func(r *colly.Response, err error) {
-		looog.Warn("retrying")
+		looog.Warnf("retrying: %s", r.Request.URL)
 		_ = r.Request.Retry()
 	})
 

@@ -3,13 +3,12 @@ package services
 import (
 	"ak/models"
 	"ak/pkg/progressbar"
-	"fmt"
 	"sync"
 )
 
 func FetchStep2(items []models.Item) []models.Item {
 	// data channels
-	bar := progressbar.New(fmt.Sprintf("%-25s", "Step2. Fill in items"), len(items))
+	bar := progressbar.New("Step2. fetching and filling in items basic info...", len(items))
 	dataChan := make(chan models.Item, 200)
 
 	var newItems []models.Item

@@ -3,7 +3,6 @@ package services
 import (
 	"ak/models"
 	"ak/pkg/progressbar"
-	"fmt"
 	"sync"
 )
 
@@ -13,7 +12,7 @@ func FetchStep1() []models.Item {
 	dataChan := make(chan ItemsPageData, 600)
 	total := make(chan int, 1)
 
-	bar := progressbar.New(fmt.Sprintf("%-25s", "Step1. Fetch items"), 0)
+	bar := progressbar.New("Step1. fetching items name and wiki...", 0)
 
 	var items []models.Item
 	wg := sync.WaitGroup{}

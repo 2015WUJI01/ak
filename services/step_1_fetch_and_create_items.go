@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/2015WUJI01/looog"
 	"github.com/gocolly/colly"
 	"regexp"
 	"strconv"
@@ -25,6 +26,7 @@ func Step1(dataChan chan ItemsPageData, total chan int) {
 	c.SetRequestTimeout(3 * time.Second)
 
 	c.OnError(func(r *colly.Response, err error) {
+		looog.Warnf("retrying: %s", r.Request.URL)
 		_ = r.Request.Retry()
 	})
 
