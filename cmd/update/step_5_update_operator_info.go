@@ -83,9 +83,6 @@ func Step5() {
 		Columns:   []clause.Column{{Name: "opr_name"}, {Name: "order"}, {Name: "level"}},
 		DoUpdates: clause.AssignmentColumns(cols),
 	}).CreateInBatches(&skillLevels, 1000)
-	for _, level := range skillLevels {
-		fmt.Printf("%+v", level)
-	}
 
 	logger.Infof("所有技能各等级升级材料数量：%d", len(skillLevelMaterials))
 	cols = []string{"opr_id", "opr_name", "order", "to_level", "item_name", "amount"}
