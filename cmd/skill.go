@@ -2,18 +2,18 @@ package cmd
 
 import (
 	"ak/database"
-	"ak/logger"
 	"ak/models"
 	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 var (
 	order int
-	rank  []string
+	// rank  string
 )
 
 var skillCmd = &cobra.Command{
@@ -67,14 +67,35 @@ var skillCmd = &cobra.Command{
 			levels []models.SkillLevel
 		}
 
+		// 解析 rankRange 参数
+		rankRange = strings.ReplaceAll(rankRange, "m1", "a")
+		rankRange = strings.ReplaceAll(rankRange, "m2", "b")
+		rankRange = strings.ReplaceAll(rankRange, "m3", "c")
+
 		// 校验 rank 参数
 		var valids []int
 		var err error
-		if valids, err = parseRank(rank); err != nil {
+		if valids, err = parseRank(strings.Split(rankRange, "")); err != nil {
 			fmt.Println(err)
 			return
-		} else if len(valids) == 0 {
-			valids = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+		}
+
+		switch len(valids) {
+		case 0:
+			fmt.Println("rank 参数不能为空") //
+			return
+		case 1:
+			// 只查一个等级
+		case 2:
+			// 查询等级范围
+			sort.Ints(valids)
+			for i := valids[0] + 1; i < valids[1]; i++ {
+				valids = append(valids, i)
+			}
+			sort.Ints(valids)
+		default:
+			fmt.Println("rank 参数过多") //
+			return
 		}
 
 		// 要查几个技能
@@ -87,31 +108,42 @@ var skillCmd = &cobra.Command{
 				var sklvs []models.SkillLevel
 				database.DB.Where("opr_name", opr.Name).
 					Where("order", skill.Order).
-					Where("level", valids).
+					Where("level in ?", valids).
 					Find(&sklvs)
 				sks = append(sks, SkInfo{
 					skill:  skill,
 					levels: sklvs,
 				})
+
+				fmt.Printf("%s %d 技能 %s | %s\n", skill.OprName, skill.Order, skill.Name, skill.Trigger())
+				for _, level := range sklvs {
+					if level.Level <= 7 {
+						fmt.Printf("Rank %d:   [%d/%d] %s\n", level.Level, level.OriPt, level.CostPt, level.Comment)
+					} else {
+						fmt.Printf("Master %d: [%d/%d] %s\n", level.Level-7, level.OriPt, level.CostPt, level.Comment)
+					}
+				}
 			}
-			logger.Debug(sks)
+			// logger.Debug(sks)
 		} else if order <= 3 {
 			// 查询单个技能
 			var skill models.Skill
-			database.DB.Where("opr_name", opr.Name).First(&skill)
+			database.DB.Where("opr_name", opr.Name).Where("order", order).First(&skill)
 
-			var sk SkInfo
 			var sklvs []models.SkillLevel
 			database.DB.Where("opr_name", opr.Name).
-				Where("order", skill.Order).
-				Where("level", valids).
+				Where("order", order).
+				Where("level in ?", valids).
 				Find(&sklvs)
-			sk = SkInfo{
-				skill:  skill,
-				levels: sklvs,
-			}
 
-			logger.Debug(sk)
+			fmt.Printf("%s %d 技能 %s | %s\n", skill.OprName, skill.Order, skill.Name, skill.Trigger())
+			for _, level := range sklvs {
+				if level.Level <= 7 {
+					fmt.Printf("Rank %d:   [%d/%d] %s\n", level.Level, level.OriPt, level.CostPt, level.Comment)
+				} else {
+					fmt.Printf("Master %d: [%d/%d] %s\n", level.Level-7, level.OriPt, level.CostPt, level.Comment)
+				}
+			}
 		}
 
 	},
@@ -126,7 +158,7 @@ func init() {
 
 	// 指定技能
 	skillCmd.Flags().IntVarP(&order, "order", "o", 0, "指定干员的第 n 个技能，默认为所有技能")
-	skillCmd.Flags().StringArrayVarP(&rank, "rank", "r", []string{}, "指定干员技能的等级，默认为所有等级")
+	skillCmd.Flags().StringVarP(&rankRange, "rank", "r", "1c", "指定干员技能的等级，默认为所有等级")
 
 	rootCmd.AddCommand(skillCmd)
 }

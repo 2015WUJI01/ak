@@ -34,7 +34,7 @@ func Step5() {
 
 	fmt.Println("逐条更新干员信息中...")
 
-	c := colly.NewCollector(colly.Async(true))
+	c := colly.NewCollector(colly.Async(true), colly.CacheDir("tmp/cache"))
 	c.SetRequestTimeout(5 * time.Second)
 	c.OnError(func(r *colly.Response, err error) {
 		_ = r.Request.Retry()
@@ -80,9 +80,12 @@ func Step5() {
 	logger.Infof("所有技能各等级数量：%d", len(skillLevels))
 	cols = []string{"opr_id", "opr_name", "order", "level", "ori_pt", "cost_pt", "last", "comment"}
 	database.DB.Select(cols).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "opr_id"}, {Name: "order"}, {Name: "level"}},
+		Columns:   []clause.Column{{Name: "opr_name"}, {Name: "order"}, {Name: "level"}},
 		DoUpdates: clause.AssignmentColumns(cols),
 	}).CreateInBatches(&skillLevels, 1000)
+	for _, level := range skillLevels {
+		fmt.Printf("%+v", level)
+	}
 
 	logger.Infof("所有技能各等级升级材料数量：%d", len(skillLevelMaterials))
 	cols = []string{"opr_id", "opr_name", "order", "to_level", "item_name", "amount"}

@@ -7,17 +7,22 @@ import (
 )
 
 func FetchStep3() []models.Item {
-	dataChan := make(chan models.Item, 300) // data channels
-	bar := progressbar.New("Step3. fetching and filling in item group and type....", -1)
+	// data channels
+	dataChan := make(chan models.Item, 300)
+
+	bar := progressbar.New("Step3. fetching and update items group and type....", 300) // 假设只有 300 个
 
 	var newItems []models.Item
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
+		total := 0
 		for item := range dataChan {
 			newItems = append(newItems, item)
+			total++
 			_ = bar.Add(1)
 		}
+		bar.ChangeMax(total)
 		_ = bar.Finish()
 		wg.Done()
 	}()

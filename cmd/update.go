@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"ak/cmd/update"
+	"ak/database"
 	"ak/models"
-	repo "ak/repositories"
-	"fmt"
+	"ak/services"
 	"github.com/spf13/cobra"
 )
 
@@ -23,14 +23,18 @@ var updateCmd = &cobra.Command{
 			for _, arg := range args {
 				m[arg] = struct{}{}
 			}
+
+			var items []models.Item
 			if _, ok := m["1"]; ok {
-				update.Step1()
+				services.FetchStep1(&items)
+			} else {
+				database.DB.Where(&models.Item{}).Find(&items)
 			}
 			if _, ok := m["2"]; ok {
-				update.Step2()
+				services.FetchStep2(items)
 			}
 			if _, ok := m["3"]; ok {
-				update.Step3()
+				services.FetchStep3()
 			}
 			if _, ok := m["4"]; ok {
 				update.Step4()
@@ -43,29 +47,5 @@ var updateCmd = &cobra.Command{
 }
 
 func init() {
-	var wikiFlag, groupFlag bool
-	updateItemCmd := &cobra.Command{
-		Use:     "item",
-		Short:   "更新指定的 item",
-		Example: "ak update item -wiki 龙门币",
-		Args:    cobra.MinimumNArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			for _, itemname := range args {
-				item := models.Item{Name: itemname}
-				if wikiFlag {
-					models.FreshItemWiki(&item)
-					repo.CreateOrUpdateItem(item, "name", "wiki")
-					fmt.Printf("更新 %v wiki 成功：%v\n", item.Name, item.Wiki)
-				}
-				if groupFlag {
-					item.FreshGroup()
-					fmt.Printf("更新 %v group 成功：%v\n", item.Name, item.Wiki)
-				}
-			}
-		},
-	}
-	updateItemCmd.Flags().BoolVarP(&wikiFlag, "wiki", "w", false, "更新 wiki 链接")
-	updateItemCmd.Flags().BoolVarP(&groupFlag, "group", "g", false, "更新 wiki 链接")
-	updateCmd.AddCommand(updateItemCmd)
 	rootCmd.AddCommand(updateCmd)
 }

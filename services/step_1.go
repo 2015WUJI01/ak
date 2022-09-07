@@ -6,34 +6,31 @@ import (
 	"sync"
 )
 
-func FetchStep1() []models.Item {
-
+func FetchStep1(items *[]models.Item) {
 	// data channels
 	dataChan := make(chan ItemsPageData, 600)
-	total := make(chan int, 1)
+	totalChan := make(chan int, 1)
 
-	bar := progressbar.New("Step1. fetching items name and wiki...", 0)
+	bar := progressbar.New("Step1. fetching and store items name and wiki...", 0)
 
-	var items []models.Item
 	wg := sync.WaitGroup{}
 	go func() {
 		for {
 			select {
-			case t := <-total:
+			case t := <-totalChan:
 				bar.ChangeMax(t)
 				wg.Add(t)
 			case data, ok := <-dataChan:
 				if !ok {
 					break
 				}
-				items = append(items, models.Item{Name: data.Name, Wiki: data.Wiki})
+				*items = append(*items, models.Item{Name: data.Name, Wiki: data.Wiki})
 				bar.Add(1)
 				wg.Done()
 			}
 		}
 	}()
 
-	Step1(dataChan, total)
+	Step1(dataChan, totalChan)
 	wg.Wait()
-	return items
 }

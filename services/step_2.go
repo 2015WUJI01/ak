@@ -8,8 +8,9 @@ import (
 
 func FetchStep2(items []models.Item) []models.Item {
 	// data channels
-	bar := progressbar.New("Step2. fetching and filling in items basic info...", len(items))
 	dataChan := make(chan models.Item, 200)
+
+	bar := progressbar.New("Step2. fetching and update items basic info...", len(items))
 
 	var newItems []models.Item
 	wg := sync.WaitGroup{}
